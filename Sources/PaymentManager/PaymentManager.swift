@@ -10,6 +10,13 @@ public typealias Transaction = StoreKit.Transaction
 public typealias RenewalInfo = StoreKit.Product.SubscriptionInfo.RenewalInfo
 public typealias RenewalState = StoreKit.Product.SubscriptionInfo.RenewalState
 
+public enum PaymentKeys {
+    public static let isPaidUser = "isPaidUser"
+    public static let isLifeTimeSubscribed = "isLifeTimeSubscribed"
+    public static let subscribedProductID = "SubscribedID"
+}
+
+
 public enum StoreError: Error {
     case failedVerification
 }
@@ -238,28 +245,47 @@ public class Store: ObservableObject {
             purchaseExpired()
         }
     }
-    private func enablePro(){
+    private func enablePro() {
         DispatchQueue.main.async {
-            UserDefaults.standard.set(true, forKey: "isPaidUser")
-            UserDefaults.standard.synchronize()
-            NotificationCenter.default.post(name: .SubscriptionStatus, object: nil)
+            UserDefaults.standard.isPaidUser = true
+            NotificationCenter.default.post(name: Notification.Name(Store.SubscriptionStatus), object: nil)
         }
     }
-    private func purchaseExpired(userInfo: [String: Any]? = nil){
-        UserDefaults.standard.set(false, forKey: "isPaidUser")
-        UserDefaults.standard.synchronize()
+
+    private func purchaseExpired(userInfo: [String: Any]? = nil) {
+        UserDefaults.standard.isPaidUser = false
         DispatchQueue.main.async {
-            NotificationCenter.default.post(name: .SubscriptionStatus, object: userInfo)
+            NotificationCenter.default.post(name: Notification.Name(Store.SubscriptionStatus), object: userInfo)
         }
     }
-    private func setLifetimePro(status:Bool){
-        UserDefaults.standard.set(status, forKey: "isLifeTimeSubscribed")
-        UserDefaults.standard.synchronize()
+
+    private func setLifetimePro(status: Bool) {
+        UserDefaults.standard.isLifeTimeSubscribed = status
         DispatchQueue.main.async {
-            NotificationCenter.default.post(name: .SubscriptionStatus, object: nil)
+            NotificationCenter.default.post(name: Notification.Name(Store.SubscriptionStatus), object: nil)
         }
+    }
+
+}
+
+public extension UserDefaults {
+    
+    public var isPaidUser: Bool {
+        get { bool(forKey: PaymentKeys.isPaidUser) }
+        set { set(newValue, forKey: PaymentKeys.isPaidUser) }
+    }
+    
+    public var isLifeTimeSubscribed: Bool {
+        get { bool(forKey: PaymentKeys.isLifeTimeSubscribed) }
+        set { set(newValue, forKey: PaymentKeys.isLifeTimeSubscribed) }
+    }
+    
+    public var subscribedProductID: String {
+        get { string(forKey: PaymentKeys.subscribedProductID) ?? "" }
+        set { set(newValue, forKey: PaymentKeys.subscribedProductID) }
     }
 }
+
 
 
 //how to use this manager
