@@ -248,21 +248,21 @@ public class Store: ObservableObject {
     private func enablePro() {
         DispatchQueue.main.async {
             UserDefaults.standard.isPaidUser = true
-            NotificationCenter.default.post(name: Notification.Name(Store.SubscriptionStatus), object: nil)
+            NotificationCenter.default.post(name: .SubscriptionStatus, object: nil)
         }
     }
 
     private func purchaseExpired(userInfo: [String: Any]? = nil) {
         UserDefaults.standard.isPaidUser = false
         DispatchQueue.main.async {
-            NotificationCenter.default.post(name: Notification.Name(Store.SubscriptionStatus), object: userInfo)
+            NotificationCenter.default.post(name: .SubscriptionStatus, object: userInfo)
         }
     }
 
     private func setLifetimePro(status: Bool) {
         UserDefaults.standard.isLifeTimeSubscribed = status
         DispatchQueue.main.async {
-            NotificationCenter.default.post(name: Notification.Name(Store.SubscriptionStatus), object: nil)
+            NotificationCenter.default.post(name: .SubscriptionStatus, object: nil)
         }
     }
 
@@ -285,6 +285,7 @@ public extension UserDefaults {
         set { set(newValue, forKey: PaymentKeys.subscribedProductID) }
     }
 }
+
 
 
 
