@@ -10,11 +10,20 @@ public typealias Transaction = StoreKit.Transaction
 public typealias RenewalInfo = StoreKit.Product.SubscriptionInfo.RenewalInfo
 public typealias RenewalState = StoreKit.Product.SubscriptionInfo.RenewalState
 
-public enum PaymentKeys {
-    public static let isPaidUser = "isPaidUser"
-    public static let isLifeTimeSubscribed = "isLifeTimeSubscribed"
-    public static let subscribedProductID = "SubscribedID"
+public struct PaymentKeys {
+    public let isPaidUser: String
+    public let isLifeTimeSubscribed: String
+    public let subscribedProductID: String
+
+    public init(isPaidUser: String,
+                isLifeTimeSubscribed: String,
+                subscribedProductID: String) {
+        self.isPaidUser = isPaidUser
+        self.isLifeTimeSubscribed = isLifeTimeSubscribed
+        self.subscribedProductID = subscribedProductID
+    }
 }
+
 
 
 public enum StoreError: Error {
@@ -38,6 +47,7 @@ public class Store: ObservableObject {
     private(set) var nonConsume: [Product]
     private(set) var purchasedSubscriptions: [Product] = []
   
+    private let keys: PaymentKeys
     
     public var productsList : [Product] = []
     
@@ -47,11 +57,11 @@ public class Store: ObservableObject {
     
     public var introOfferEligibility: [String: Bool] = [:]
     
-    public init(productIDs: [String]) {
+    public init(productIDs: [String], keys:PaymentKeys) {
         self.productIDs = productIDs
         subscriptions = []
         nonConsume = []
-        
+        self.keys = keys
         updateListenerTask = listenForTransactions()
         
         Task {
@@ -285,6 +295,23 @@ public extension UserDefaults {
         set { set(newValue, forKey: PaymentKeys.subscribedProductID) }
     }
 }
+
+
+///How to set the keys from the app
+
+//let keys = PaymentKeys(
+//    isPaidUser: "myApp_isPaidUser",
+//    isLifeTimeSubscribed: "myApp_isLifeTimeSubscribed",
+//    subscribedProductID: "myApp_subscribedID"
+//)
+
+///how to check The subscription status
+
+// UserDefaults.standerd.isPaidUser
+
+///how to check The lifeTime status
+
+// UserDefaults.standerd.isLifeTimeSubscribed
 
 
 
