@@ -4,6 +4,7 @@
 //  Created by Macgenics on 25/07/2025.
 //
 
+import Foundation
 import StoreKit
 
 public typealias Transaction = StoreKit.Transaction
@@ -13,14 +14,12 @@ public typealias RenewalState = StoreKit.Product.SubscriptionInfo.RenewalState
 public struct PaymentKeys {
     public let isPaidUser: String
     public let isLifeTimeSubscribed: String
-    public let subscribedProductID: String
 
     public init(isPaidUser: String,
                 isLifeTimeSubscribed: String,
                 subscribedProductID: String) {
         self.isPaidUser = isPaidUser
         self.isLifeTimeSubscribed = isLifeTimeSubscribed
-        self.subscribedProductID = subscribedProductID
     }
 }
 
@@ -257,20 +256,20 @@ public class Store: ObservableObject {
     }
     private func enablePro() {
         DispatchQueue.main.async {
-            UserDefaults.standard.isPaidUser = true
+            UserDefaults.standard.setPaidUser(true, keys: self.keys)
             NotificationCenter.default.post(name: .SubscriptionStatus, object: nil)
         }
     }
 
     private func purchaseExpired(userInfo: [String: Any]? = nil) {
-        UserDefaults.standard.isPaidUser = false
+        UserDefaults.standard.setPaidUser(false, keys: self.keys)
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .SubscriptionStatus, object: userInfo)
         }
     }
 
     private func setLifetimePro(status: Bool) {
-        UserDefaults.standard.isLifeTimeSubscribed = status
+        UserDefaults.standard.setLifeTimeSubscribed(status, keys: self.keys)
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .SubscriptionStatus, object: nil)
         }
@@ -280,20 +279,22 @@ public class Store: ObservableObject {
 
 public extension UserDefaults {
     
-    public var isPaidUser: Bool {
-        get { bool(forKey: PaymentKeys.isPaidUser) }
-        set { set(newValue, forKey: PaymentKeys.isPaidUser) }
+    func isPaidUser(keys: PaymentKeys) -> Bool {
+        bool(forKey: keys.isPaidUser)
     }
     
-    public var isLifeTimeSubscribed: Bool {
-        get { bool(forKey: PaymentKeys.isLifeTimeSubscribed) }
-        set { set(newValue, forKey: PaymentKeys.isLifeTimeSubscribed) }
+    func setPaidUser(_ value: Bool, keys: PaymentKeys) {
+        set(value, forKey: keys.isPaidUser)
     }
     
-    public var subscribedProductID: String {
-        get { string(forKey: PaymentKeys.subscribedProductID) ?? "" }
-        set { set(newValue, forKey: PaymentKeys.subscribedProductID) }
+    func isLifeTimeSubscribed(keys: PaymentKeys) -> Bool {
+        bool(forKey: keys.isLifeTimeSubscribed)
     }
+    
+    func setLifeTimeSubscribed(_ value: Bool, keys: PaymentKeys) {
+        set(value, forKey: keys.isLifeTimeSubscribed)
+    }
+    
 }
 
 
