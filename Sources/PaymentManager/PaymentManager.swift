@@ -95,24 +95,17 @@ public class Store: ObservableObject {
     public func requestProducts() async {
         do {
             //Request products from the App Store using the identifiers that the Products.plist file defines.
+            
             let storeProducts = try await Product.products(for: productIDs)
-            for product in storeProducts {
-                print(product.id)
-            }
-            if let weeklyProduct = storeProducts.filter({$0.id.contains("week")}).first{
-                productsList.append(weeklyProduct)
-            }
-            if let monthlyProduct = storeProducts.filter({$0.id.contains("month")}).first{
-                productsList.append(monthlyProduct)
+            
+            // Sort products by duration
+            let sortedProducts = storeProducts.sorted { p1, p2 in
+                let duration1 = subscriptionDuration(for: p1)
+                let duration2 = subscriptionDuration(for: p2)
+                return duration1 < duration2
             }
             
-            if let yearlyProduct = storeProducts.filter({$0.id.contains("yearly")}).first{
-                productsList.append(yearlyProduct)
-            }
-            
-            if let lifeProduct = storeProducts.filter({$0.id.contains("life")}).first{
-                productsList.append(lifeProduct)
-            }
+            productsList = sortedProducts
             
             introOfferEligibility = [:]
             
@@ -128,6 +121,25 @@ public class Store: ObservableObject {
         } catch {
             print("Failed product request from the App Store server: \(error)")
         }
+    }
+    
+    private func subscriptionDuration(for product: Product) -> Int {
+        if let subscription = product.subscription {
+            switch subscription.subscriptionPeriod.unit {
+            case .day:
+                return subscription.subscriptionPeriod.value
+            case .week:
+                return subscription.subscriptionPeriod.value * 7
+            case .month:
+                return subscription.subscriptionPeriod.value * 30
+            case .year:
+                return subscription.subscriptionPeriod.value * 365
+            @unknown default:
+                return Int.max
+            }
+        }
+        // Non-subscription (lifetime) product
+        return Int.max
     }
     
     public func checkIntroOfferEligibility(for product: Product) async -> Bool {
