@@ -1,6 +1,5 @@
 //
-//  StoreError.swift
-//  GPSCam
+//  PaymentManager.swift
 //
 //  Created by Macgenics on 25/07/2025.
 //
@@ -15,46 +14,48 @@ public enum StoreError: Error {
     case failedVerification
 }
 
+extension Notification.Name {
+    static let SubscriptionStatus = Notification.Name("IAPHelperPurchaseNotification")
+    static let PurchaseFailedNotification = Notification.Name("IAPHelperFailNotification")
+    static let PurchaseErrorNotification = Notification.Name("IAHelperERRORNotification")
+    static let PurchaseExpiredNotification = Notification.Name("IAHelperExpireNotification")
+    static let IAHelperHideHUD = Notification.Name("IAHelperHideHUD")
+    static let NotPurchaseNotification = Notification.Name("IAHelperNotPurchaseNotification")
+    static let PurchaseCancelErrorNotification = Notification.Name("IAHelperCancelErrorNotification")
+}
+
+
 class Store: ObservableObject {
     
     private(set) var subscriptions: [Product]
     private(set) var nonConsume: [Product]
     private(set) var purchasedSubscriptions: [Product] = []
-    static let SubscriptionStatus = "IAPHelperPurchaseNotification"
-    
-    static let PurchaseFailedNotification = "IAPHelperFailNotification"
-    static let PurchaseErrorNotification = "IAHelperERRORNotification"
-    static let PurchaseExpiredNotification = "IAHelperExpireNotification"
-    static let IAHelperHideHUD = "IAHelperHideHUD"
-    static let NotPurchaseNotification = "IAHelperNotPurchaseNotification"
-    static let PurchaseCancelErrorNotification = "IAHelperCancelErrorNotification"
+  
     
     var productsList : [Product] = []
-    let productIDs: [String] = [monthly, lifeTime]
+    
+    var productIDs: [String] = []
     
     var updateListenerTask: Task<Void, Error>? = nil
     var introOfferEligibility: [String: Bool] = [:]
     
-    init() {
-        
+    public init(productIDs: [String]) {
+        self.productIDs = productIDs
         subscriptions = []
         nonConsume = []
         
-        //Start a transaction listener as close to app launch as possible so you don't miss any transactions.
         updateListenerTask = listenForTransactions()
         
         Task {
-            //During store initialization, request products from the App Store.
-            
-            
-            //Deliver products that the customer purchases.
             await updateCustomerProductStatus()
         }
     }
     
+    
     deinit {
         updateListenerTask?.cancel()
     }
+    
     func listenForTransactions() -> Task<Void, Error> {
         return Task.detached {
             //Iterate through any transactions that don't come from a direct call to `purchase()`.
@@ -229,21 +230,21 @@ class Store: ObservableObject {
         DispatchQueue.main.async {
             UserDefaults.standard.set(true, forKey: "isPaidUser")
             UserDefaults.standard.synchronize()
-            NotificationCenter.default.post(name: Notification.Name(Store.SubscriptionStatus), object: nil)
+            NotificationCenter.default.post(name: .SubscriptionStatus, object: nil)
         }
     }
     private func purchaseExpired(userInfo: [String: Any]? = nil){
         UserDefaults.standard.set(false, forKey: "isPaidUser")
         UserDefaults.standard.synchronize()
         DispatchQueue.main.async {
-            NotificationCenter.default.post(name: Notification.Name(Store.SubscriptionStatus), object: userInfo)
+            NotificationCenter.default.post(name: .SubscriptionStatus, object: userInfo)
         }
     }
     private func setLifetimePro(status:Bool){
         UserDefaults.standard.set(status, forKey: "isLifeTimeSubscribed")
         UserDefaults.standard.synchronize()
         DispatchQueue.main.async {
-            NotificationCenter.default.post(name: Notification.Name(Store.SubscriptionStatus), object: nil)
+            NotificationCenter.default.post(name: .SubscriptionStatus, object: nil)
         }
     }
 }
@@ -339,3 +340,4 @@ class Store: ObservableObject {
 //        dismiss your VC
 //    }
 //}
+
