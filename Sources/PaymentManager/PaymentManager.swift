@@ -122,7 +122,7 @@ public class Store: ObservableObject {
         return eligibility
     }
     
-    @discardableResult func purchase(_ product: Product) async throws -> Transaction? {
+    @discardableResult public func purchase(_ product: Product) async throws -> Transaction? {
         //Begin purchasing the `Product` the user selects.
         let result = try await product.purchase()
         
