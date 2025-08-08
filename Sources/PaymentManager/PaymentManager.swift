@@ -82,14 +82,23 @@ public class Store: ObservableObject {
             for product in storeProducts {
                 print(product.id)
             }
-            if let weeklyProduct = storeProducts.filter({$0.id.contains("month")}).first{
+            if let weeklyProduct = storeProducts.filter({$0.id.contains("week")}).first{
                 productsList.append(weeklyProduct)
             }
-            if let monthlyProduct = storeProducts.filter({$0.id.contains("life")}).first{
+            if let monthlyProduct = storeProducts.filter({$0.id.contains("month")}).first{
                 productsList.append(monthlyProduct)
             }
             
+            if let yearlyProduct = storeProducts.filter({$0.id.contains("yearly")}).first{
+                productsList.append(yearlyProduct)
+            }
+            
+            if let lifeProduct = storeProducts.filter({$0.id.contains("life")}).first{
+                productsList.append(lifeProduct)
+            }
+            
             introOfferEligibility = [:]
+            
             for product in productsList {
                 if product.subscription?.introductoryOffer == nil {
                     introOfferEligibility[product.id] = false
