@@ -8,7 +8,7 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "AMPlaceholder",
+            name: "PaymentManager",
             targets: ["PaymentManager"]
         ),
     ],
