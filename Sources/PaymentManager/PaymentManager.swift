@@ -6,9 +6,9 @@
 
 import StoreKit
 
-typealias Transaction = StoreKit.Transaction
-typealias RenewalInfo = StoreKit.Product.SubscriptionInfo.RenewalInfo
-typealias RenewalState = StoreKit.Product.SubscriptionInfo.RenewalState
+public typealias Transaction = StoreKit.Transaction
+public typealias RenewalInfo = StoreKit.Product.SubscriptionInfo.RenewalInfo
+public typealias RenewalState = StoreKit.Product.SubscriptionInfo.RenewalState
 
 public enum StoreError: Error {
     case failedVerification
@@ -122,7 +122,8 @@ public class Store: ObservableObject {
         return eligibility
     }
     
-    @discardableResult public func purchase(_ product: Product) async throws -> Transaction? {
+    @discardableResult
+    public func purchase(_ product: Product) async throws -> Transaction? {
         //Begin purchasing the `Product` the user selects.
         let result = try await product.purchase()
         
