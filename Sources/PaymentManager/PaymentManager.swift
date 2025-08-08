@@ -14,7 +14,7 @@ public enum StoreError: Error {
     case failedVerification
 }
 
-extension Notification.Name {
+public extension Notification.Name {
     static let SubscriptionStatus = Notification.Name("IAPHelperPurchaseNotification")
     static let PurchaseFailedNotification = Notification.Name("IAPHelperFailNotification")
     static let PurchaseErrorNotification = Notification.Name("IAHelperERRORNotification")
@@ -25,7 +25,7 @@ extension Notification.Name {
 }
 
 
-class Store: ObservableObject {
+public class Store: ObservableObject {
     
     private(set) var subscriptions: [Product]
     private(set) var nonConsume: [Product]
