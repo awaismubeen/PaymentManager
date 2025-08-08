@@ -32,12 +32,13 @@ public class Store: ObservableObject {
     private(set) var purchasedSubscriptions: [Product] = []
   
     
-    var productsList : [Product] = []
+    public var productsList : [Product] = []
     
-    var productIDs: [String] = []
+    public var productIDs: [String] = []
     
     var updateListenerTask: Task<Void, Error>? = nil
-    var introOfferEligibility: [String: Bool] = [:]
+    
+    public var introOfferEligibility: [String: Bool] = [:]
     
     public init(productIDs: [String]) {
         self.productIDs = productIDs
@@ -75,7 +76,7 @@ public class Store: ObservableObject {
             }
         }
     }
-    func requestProducts() async {
+    public func requestProducts() async {
         do {
             //Request products from the App Store using the identifiers that the Products.plist file defines.
             let storeProducts = try await Product.products(for: productIDs)
@@ -112,7 +113,8 @@ public class Store: ObservableObject {
             print("Failed product request from the App Store server: \(error)")
         }
     }
-    func checkIntroOfferEligibility(for product: Product) async -> Bool {
+    
+    public func checkIntroOfferEligibility(for product: Product) async -> Bool {
         guard let subscriptionInfo = product.subscription else {
             return false
         }
@@ -225,7 +227,7 @@ public class Store: ObservableObject {
     func sortByPrice(_ products: [Product]) -> [Product] {
         products.sorted(by: { return $0.price < $1.price })
     }
-    func restorePurchases() async {
+    public func restorePurchases() async {
         do{
             try await AppStore.sync()
             SKPaymentQueue.default().restoreCompletedTransactions()
