@@ -296,6 +296,44 @@ public class Store: ObservableObject {
     }
 }
 
+public extension Product{
+
+    func getIntroductoryOfferDays() async -> Int? {
+        
+        guard case .autoRenewable = self.type else {
+            print("❌ Not a subscription product")
+            return nil
+        }
+        
+        guard let introOffer = self.subscription?.introductoryOffer else {
+            print("❌ No introductory offer available")
+            return nil
+        }
+        
+        // Duration components
+        let value = introOffer.period.value
+        let unit = introOffer.period.unit
+        
+        // Convert to days
+        let days: Int
+        switch unit {
+        case .day:
+            days = value
+        case .week:
+            days = value * 7
+        case .month:
+            days = value * 30
+        case .year:
+            days = value * 365
+        @unknown default:
+            days = value
+        }
+        
+        return days
+    }
+
+}
+
 public extension UserDefaults {
     
     func isPaidUser(keys: PaymentKeys) -> Bool {
