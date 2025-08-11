@@ -107,16 +107,7 @@ public class Store: ObservableObject {
             
             productsList = sortedProducts
             
-            introOfferEligibility = [:]
-            
-            for product in productsList {
-                if product.subscription?.introductoryOffer == nil {
-                    introOfferEligibility[product.id] = false
-                }else{
-                    let isEligible = await checkIntroOfferEligibility(for: product)
-                    introOfferEligibility[product.id] = isEligible
-                }
-            }
+            introOfferEligibility = await checkIntroOfferEligibility(forProductIDs: productIDs)
             
         } catch {
             print("Failed product request from the App Store server: \(error)")
@@ -287,6 +278,22 @@ public class Store: ObservableObject {
         }
     }
 
+    public func checkIntroOfferEligibility(forProductIDs ids: [String]) async -> [String: Bool] {
+        var result: [String: Bool] = [:]
+
+        do {
+            let products = try await Product.products(for: ids)
+            for product in products {
+                let eligible = await checkIntroOfferEligibility(for: product)
+                result[product.id] = eligible
+            }
+        } catch {
+            // On failure, mark unknown/false; you may want to propagate or log the error
+            for id in ids { result[id] = false }
+        }
+
+        return result
+    }
 }
 
 public extension UserDefaults {
