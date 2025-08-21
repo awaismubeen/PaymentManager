@@ -137,6 +137,10 @@ public class Store: ObservableObject {
         guard let subscriptionInfo = product.subscription else {
             return false
         }
+        guard subscription.introductoryOffer != nil else {
+            return false
+        }
+        
         let eligibility =  await subscriptionInfo.isEligibleForIntroOffer
         return eligibility
     }
