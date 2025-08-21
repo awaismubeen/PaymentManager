@@ -137,7 +137,7 @@ public class Store: ObservableObject {
         guard let subscriptionInfo = product.subscription else {
             return false
         }
-        guard subscription.introductoryOffer != nil else {
+        guard subscriptionInfo.introductoryOffer != nil else {
             return false
         }
         
