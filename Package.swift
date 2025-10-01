@@ -4,7 +4,8 @@ import PackageDescription
 let package = Package(
     name: "PaymentManager",
     platforms: [
-        .macOS(.v13) // or your target version
+        .macOS(.v13), // or your target version
+        .iOS(.v15)
     ],
     products: [
         .library(
