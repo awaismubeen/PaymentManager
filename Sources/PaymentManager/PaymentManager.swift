@@ -516,7 +516,7 @@ extension Product.SubscriptionPeriod {
     }
 }
 
-extension Product.SubscriptionPeriod.Unit {
+public extension Product.SubscriptionPeriod.Unit {
 
     func days(from value: Int) -> Int {
         switch self {
@@ -535,7 +535,7 @@ extension Product.SubscriptionPeriod.Unit {
 }
 
 
-extension Product{
+public extension Product{
     func doublePrice() -> Double{
         self.price.doubleValue
     }
@@ -545,7 +545,7 @@ extension Product{
     }
 }
 
-extension Decimal {
+public extension Decimal {
     var doubleValue: Double {
         NSDecimalNumber(decimal: self).doubleValue
     }
