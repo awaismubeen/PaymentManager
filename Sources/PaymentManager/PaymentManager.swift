@@ -6,6 +6,8 @@
 
 import Foundation
 import StoreKit
+import Localize_Swift
+
 
 public typealias Transaction = StoreKit.Transaction
 public typealias RenewalInfo = StoreKit.Product.SubscriptionInfo.RenewalInfo
@@ -469,3 +471,82 @@ public extension UserDefaults {
 //    }
 //}
 
+
+
+extension Product {
+
+    /// Returns a user-friendly introductory offer message
+    /// Example: "Try free for 7 days, then $4.99 / week"
+    func introductoryOfferMessage() -> String? {
+
+        guard let intro = subscription?.introductoryOffer else {
+            return nil
+        }
+
+        let freeDays = intro.period.unit == .day
+            ? intro.period.value
+            : intro.period.unit.days(from: intro.period.value)
+
+        let price = displayPrice
+        let period = subscription?.subscriptionPeriod.readableString ?? ""
+
+        if intro.paymentMode == .freeTrial {
+            return "\("Try free for".localized()) \(freeDays) \("days".localized()), \("then".localized()) \(price) / \(period.localized())"
+        }
+
+        return nil
+    }
+}
+
+extension Product.SubscriptionPeriod {
+
+    var readableString: String {
+        switch unit {
+        case .day:
+            return value == 1 ? "day" : "\(value) days"
+        case .week:
+            return value == 1 ? "week" : "\(value) weeks"
+        case .month:
+            return value == 1 ? "month" : "\(value) months"
+        case .year:
+            return value == 1 ? "year" : "\(value) years"
+        @unknown default:
+            return ""
+        }
+    }
+}
+
+extension Product.SubscriptionPeriod.Unit {
+
+    func days(from value: Int) -> Int {
+        switch self {
+        case .day:
+            return value
+        case .week:
+            return value * 7
+        case .month:
+            return value * 30
+        case .year:
+            return value * 365
+        @unknown default:
+            return value
+        }
+    }
+}
+
+
+extension Product{
+    func doublePrice() -> Double{
+        self.price.doubleValue
+    }
+    
+    func currencySymbol() -> String{
+        self.priceFormatStyle.locale.currencySymbol ?? "$"
+    }
+}
+
+extension Decimal {
+    var doubleValue: Double {
+        NSDecimalNumber(decimal: self).doubleValue
+    }
+}
