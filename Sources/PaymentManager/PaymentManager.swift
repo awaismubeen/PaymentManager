@@ -473,7 +473,7 @@ public extension UserDefaults {
 
 
 
-extension Product {
+public extension Product {
 
     /// Returns a user-friendly introductory offer message
     /// Example: "Try free for 7 days, then $4.99 / week"
